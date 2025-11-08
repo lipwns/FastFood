@@ -1,4 +1,4 @@
-package faculdade.trabalho.FastFood;
+package faculdade.trabalho.FastFood.Controller;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
