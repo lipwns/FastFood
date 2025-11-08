@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping
-public class Controller {
+public class FuncionarioController {
 
     @GetMapping("/primeiramensagem")
     public String primeiraMensagem(){
