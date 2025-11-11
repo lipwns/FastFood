@@ -1,8 +1,10 @@
 package faculdade.trabalho.FastFood.Controller;
 
+import faculdade.trabalho.FastFood.DTO.FuncionarioDTO;
 import faculdade.trabalho.FastFood.Model.FuncionarioModel;
 import faculdade.trabalho.FastFood.Service.FuncionarioService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,52 +14,52 @@ import java.util.List;
 @RequestMapping("/funcionarios")
 public class FuncionarioController {
 
-    @Autowired
-    private FuncionarioService funcionarioService;
+    private final FuncionarioService funcionarioService;
+
+    public FuncionarioController(FuncionarioService funcionarioService) {
+        this.funcionarioService = funcionarioService;
+    }
 
     // Criar novo funcionário
     @PostMapping
-    public FuncionarioModel criarFuncionario(@RequestBody FuncionarioModel funcionario) {
-        return funcionarioService.salvar(funcionario);
+    public ResponseEntity<String> criarFuncionario(@Valid @RequestBody FuncionarioDTO funcionario) {
+        FuncionarioDTO novoFuncionario = funcionarioService.criar(funcionario);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Funcionário \"" + novoFuncionario.getNome() + "\" criado com sucesso!");
     }
 
     // Listar todos os funcionários
     @GetMapping
-    public List<FuncionarioModel> listarFuncionarios() {
-        return funcionarioService.listarTodos();
+    public ResponseEntity<List<FuncionarioDTO>> listarFuncionarios() {
+        List<FuncionarioDTO> funcionarios = funcionarioService.listarTodos();
+        return ResponseEntity.ok(funcionarios);
     }
 
     // Buscar funcionário por ID
     @GetMapping("/{id}")
-    public ResponseEntity<FuncionarioModel> buscarPorId(@PathVariable Long id) {
-        return funcionarioService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
+        FuncionarioDTO funcionario = funcionarioService.buscarPorId(id);
+        if (funcionario != null) return ResponseEntity.ok(funcionario);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário com ID " + id + " não encontrado!");
     }
 
     // Atualizar funcionário existente
     @PutMapping("/{id}")
-    public ResponseEntity<FuncionarioModel> atualizarFuncionario(@PathVariable Long id, @RequestBody FuncionarioModel funcionario) {
-        return funcionarioService.buscarPorId(id)
-                .map(existente -> {
-                    existente.setNome(funcionario.getNome());
-                    existente.setCpf(funcionario.getCpf());
-                    existente.setIdade(funcionario.getIdade());
-                    existente.setSexo(funcionario.getSexo());
-                    existente.setEmail(funcionario.getEmail());
-                    return ResponseEntity.ok(funcionarioService.salvar(existente));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> atualizarFuncionario(@PathVariable Long id, @Valid @RequestBody FuncionarioDTO funcionarioAtualizado) {
+        FuncionarioDTO funcionario = funcionarioService.atualizarFuncionario(id, funcionarioAtualizado);
+        if (funcionario != null) return ResponseEntity.ok(funcionario);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário com o ID " + id + " não encontrado!");
     }
 
     // Excluir funcionário
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluirFuncionario(@PathVariable Long id) {
-        if (funcionarioService.buscarPorId(id).isPresent()) {
+    public ResponseEntity<String> excluirFuncionario(@PathVariable Long id) {
+        FuncionarioDTO funcionario = funcionarioService.buscarPorId(id);
+        if (funcionario != null) {
             funcionarioService.excluir(id);
-            return ResponseEntity.noContent().build(); // 204
+            return ResponseEntity.ok("Funcionário \"" + funcionario.getNome() + "\" deletado com sucesso"); // 204
         } else {
-            return ResponseEntity.notFound().build(); // 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário com ID " + id + " não encontrado!"); // 404
         }
     }
 }

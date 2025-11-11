@@ -6,6 +6,5 @@ import faculdade.trabalho.FastFood.Model.FuncionarioModel;
 
 @Repository
 public interface FuncionarioRepository extends JpaRepository<FuncionarioModel, Long> {
-
-
+    boolean existsByCpf(String cpf);
 }
