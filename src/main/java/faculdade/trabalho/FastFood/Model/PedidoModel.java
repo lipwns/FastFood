@@ -1,10 +1,16 @@
 package faculdade.trabalho.FastFood.Model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_pedido")
+@Data
+@AllArgsConstructor
 public class PedidoModel {
 
     @Id
@@ -33,28 +39,4 @@ public class PedidoModel {
         this.formaPagamento = formaPagamento;
         this.dataHora = LocalDateTime.now();
     }
-
-    // Getters e setters
-    public Long getId() { return id; }
-
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-
-    public String getItens() { return itens; }
-    public void setItens(String itens) { this.itens = itens; }
-
-    public int getQuantidade() { return quantidade; }
-    public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
-
-    public double getPrecoTotal() { return precoTotal; }
-    public void setPrecoTotal(double precoTotal) { this.precoTotal = precoTotal; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-
-    public String getFormaPagamento() { return formaPagamento; }
-    public void setFormaPagamento(String formaPagamento) { this.formaPagamento = formaPagamento; }
-
-    public LocalDateTime getDataHora() { return dataHora; }
-    public void setDataHora(LocalDateTime dataHora) { this.dataHora = dataHora; }
 }
