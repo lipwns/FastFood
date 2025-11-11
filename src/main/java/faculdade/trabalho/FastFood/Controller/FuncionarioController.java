@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/funcionarios")
@@ -47,6 +48,13 @@ public class FuncionarioController {
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizarFuncionario(@PathVariable Long id, @Valid @RequestBody FuncionarioDTO funcionarioAtualizado) {
         FuncionarioDTO funcionario = funcionarioService.atualizarFuncionario(id, funcionarioAtualizado);
+        if (funcionario != null) return ResponseEntity.ok(funcionario);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário com o ID " + id + " não encontrado!");
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> atualizarParcialmenteFuncionario(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
+        FuncionarioDTO funcionario = funcionarioService.atualizarFuncionarioPatch(id, fields);
         if (funcionario != null) return ResponseEntity.ok(funcionario);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário com o ID " + id + " não encontrado!");
     }

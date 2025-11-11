@@ -1,12 +1,17 @@
 package faculdade.trabalho.FastFood.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import faculdade.trabalho.FastFood.DTO.FuncionarioDTO;
 import faculdade.trabalho.FastFood.Mapper.FuncionarioMapper;
 import faculdade.trabalho.FastFood.Model.FuncionarioModel;
 import faculdade.trabalho.FastFood.Repository.FuncionarioRepository;
+import org.aspectj.util.Reflection;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -41,7 +46,7 @@ public class FuncionarioService {
         return funcionarioPorID.map(funcionarioMapper::map).orElse(null);
     }
 
-    // Atualizar funcionário
+    // Atualizar funcionário - PUT request
     public FuncionarioDTO atualizarFuncionario(Long id, FuncionarioDTO funcionarioDTO) {
         Optional<FuncionarioModel> funcionarioExistente = funcionarioRepository.findById(id);
         if (funcionarioExistente.isPresent()) {
@@ -52,6 +57,34 @@ public class FuncionarioService {
             return funcionarioMapper.map(funcionarioSalvo);
         }
         return null;
+    }
+
+    // Atualizar funcionário - PATCH request
+    public FuncionarioDTO atualizarFuncionarioPatch(Long id, Map<String, Object> fields) {
+        FuncionarioModel funcionarioModel = findOne(id);
+        merge(fields, funcionarioModel);
+        funcionarioModel = funcionarioRepository.save(funcionarioModel);
+        return funcionarioMapper.map(funcionarioModel);
+    }
+
+    private void merge(Map<String, Object> fields, FuncionarioModel funcionarioModel) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        FuncionarioModel funcionarioModelConvert = objectMapper.convertValue(fields, FuncionarioModel.class);
+        fields.forEach((nomeAtributo, valorAtributo) -> {
+            Field field = ReflectionUtils.findField(FuncionarioModel.class, nomeAtributo);
+            if (field != null) {
+                field.setAccessible(true);
+                ReflectionUtils.setField(field, funcionarioModel, valorAtributo);
+                Object novoValor = ReflectionUtils.getField(field, funcionarioModelConvert);
+                ReflectionUtils.setField(field, funcionarioModel, novoValor);
+                field.setAccessible(false);
+            }
+        });
+    }
+
+    private FuncionarioModel findOne(Long id) {
+        Optional<FuncionarioModel> funcionario = funcionarioRepository.findById(id);
+        return funcionario.orElse(null);
     }
 
     // Excluir funcionário por ID
