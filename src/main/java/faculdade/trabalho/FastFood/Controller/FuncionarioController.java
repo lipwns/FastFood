@@ -1,7 +1,6 @@
 package faculdade.trabalho.FastFood.Controller;
 
 import faculdade.trabalho.FastFood.DTO.FuncionarioDTO;
-import faculdade.trabalho.FastFood.Model.FuncionarioModel;
 import faculdade.trabalho.FastFood.Service.FuncionarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
