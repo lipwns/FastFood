@@ -1,10 +1,19 @@
 package faculdade.trabalho.FastFood.Model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
 
 @Entity
 @Table(name = "itens")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ItemModel {
 
     @Id
@@ -22,50 +31,4 @@ public class ItemModel {
             inverseJoinColumns = @JoinColumn(name = "ingrediente_id")
     )
     private List<IngredienteModel> ingredientes;
-
-    public ItemModel() {}
-
-    public ItemModel(String nome, String descricao, double preco, List<IngredienteModel> ingredientes) {
-        this.nome = nome;
-        this.descricao = descricao;
-        this.preco = preco;
-        this.ingredientes = ingredientes;
-    }
-
-    // Getters e Setters
-    public Long getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public double getPreco() {
-        return preco;
-    }
-
-    public void setPreco(double preco) {
-        this.preco = preco;
-    }
-
-    public List<IngredienteModel> getIngredientes() {
-        return ingredientes;
-    }
-
-    public void setIngredientes(List<IngredienteModel> ingredientes) {
-        this.ingredientes = ingredientes;
-    }
 }
