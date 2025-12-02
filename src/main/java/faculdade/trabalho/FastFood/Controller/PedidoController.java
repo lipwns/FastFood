@@ -3,7 +3,6 @@ package faculdade.trabalho.FastFood.Controller;
 import faculdade.trabalho.FastFood.Model.PedidoModel;
 import faculdade.trabalho.FastFood.Service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,36 +28,65 @@ public class PedidoController {
 
     // Buscar pedido por ID
     @GetMapping("/{id}")
-    public ResponseEntity<PedidoModel> buscarPorId(@PathVariable Long id) {
-        return pedidoService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public PedidoModel buscarPedidoPorId(@PathVariable Long id) {
+        return pedidoService.buscarPorId(id).orElse(null);
     }
 
     // Atualizar pedido existente
     @PutMapping("/{id}")
-    public ResponseEntity<PedidoModel> atualizarPedido(@PathVariable Long id, @RequestBody PedidoModel pedido) {
-        return pedidoService.buscarPorId(id)
-                .map(existente -> {
-                    existente.setNome(pedido.getNome());
-                    existente.setItens(pedido.getItens());
-                    existente.setQuantidade(pedido.getQuantidade());
-                    existente.setPrecoTotal(pedido.getPrecoTotal());
-                    existente.setStatus(pedido.getStatus());
-                    existente.setFormaPagamento(pedido.getFormaPagamento());
-                    return ResponseEntity.ok(pedidoService.salvar(existente));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public PedidoModel atualizarPedido(@PathVariable Long id, @RequestBody PedidoModel pedidoAtualizado) {
+        PedidoModel existente = pedidoService.buscarPorId(id).orElse(null);
+
+        if (existente == null) {
+            System.out.println("Pedido não encontrado!");
+            return null;
+        }
+
+        // Atualiza campos permitidos
+        existente.setNome(pedidoAtualizado.getNome());
+        existente.setFormaPagamento(pedidoAtualizado.getFormaPagamento());
+        existente.setItens(pedidoAtualizado.getItens());
+
+        // Salva e recalcula o preço total
+        return pedidoService.salvar(existente);
     }
 
     // Excluir pedido
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluirPedido(@PathVariable Long id) {
+    public String excluirPedido(@PathVariable Long id) {
         if (pedidoService.buscarPorId(id).isPresent()) {
             pedidoService.excluir(id);
-            return ResponseEntity.noContent().build();
+            return "Pedido removido com sucesso.";
         } else {
-            return ResponseEntity.notFound().build();
+            return "Pedido não encontrado.";
         }
+    }
+
+    // Avançar status do pedido
+    @PutMapping("/{id}/avancar")
+    public PedidoModel avancarStatus(@PathVariable Long id) {
+        PedidoModel pedido = pedidoService.buscarPorId(id).orElse(null);
+
+        if (pedido == null) {
+            System.out.println("Pedido não encontrado!");
+            return null;
+        }
+
+        pedidoService.avancarStatus(pedido);
+        return pedido;
+    }
+
+    // Voltar status do pedido
+    @PutMapping("/{id}/voltar")
+    public PedidoModel voltarStatus(@PathVariable Long id) {
+        PedidoModel pedido = pedidoService.buscarPorId(id).orElse(null);
+
+        if (pedido == null) {
+            System.out.println("Pedido não encontrado!");
+            return null;
+        }
+
+        pedidoService.voltarStatus(pedido);
+        return pedido;
     }
 }

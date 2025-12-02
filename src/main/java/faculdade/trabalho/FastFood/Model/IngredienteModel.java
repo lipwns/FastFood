@@ -3,7 +3,7 @@ package faculdade.trabalho.FastFood.Model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ingredientes")
+@Table(name = "tb_ingrediente")
 public class IngredienteModel {
 
     @Id
@@ -11,7 +11,8 @@ public class IngredienteModel {
     private Long id;
 
     private String nome;
-    private int quantidade;
+
+    private int quantidade; // quantidade em estoque
 
     public IngredienteModel() {}
 
@@ -20,24 +21,11 @@ public class IngredienteModel {
         this.quantidade = quantidade;
     }
 
-    // Getters e Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public String getNome() {
-        return nome;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public int getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(int quantidade) {
-        this.quantidade = quantidade;
-    }
+    public int getQuantidade() { return quantidade; }
+    public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
 }

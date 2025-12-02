@@ -8,5 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface IngredienteRepository extends JpaRepository<IngredienteModel, Long> {
-    Optional<IngredienteModel> findByNome(String nome);
+    Optional<IngredienteModel> findByNomeIgnoreCase(String nome);
+
+    IngredienteModel findByNome(String nome);
 }

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ItemIngredienteService {
@@ -14,19 +13,66 @@ public class ItemIngredienteService {
     @Autowired
     private ItemIngredienteRepository itemIngredienteRepository;
 
-    public ItemIngredienteModel salvar(ItemIngredienteModel itemIngrediente) {
-        return itemIngredienteRepository.save(itemIngrediente);
+    // Criar relação item-ingrediente
+    public ItemIngredienteModel adicionar(ItemIngredienteModel obj) {
+        if (obj == null) {
+            System.out.println("Objeto inválido.");
+            return null;
+        }
+        System.out.println("Ingrediente vinculado ao item.");
+        return itemIngredienteRepository.save(obj);
     }
 
+    // Listar todas relações
     public List<ItemIngredienteModel> listarTodos() {
         return itemIngredienteRepository.findAll();
     }
 
-    public Optional<ItemIngredienteModel> buscarPorId(Long id) {
-        return itemIngredienteRepository.findById(id);
+    // Buscar por ID
+    public ItemIngredienteModel buscarPorId(Long id) {
+        if (id == null) {
+            System.out.println("ID inválido.");
+            return null;
+        }
+        return itemIngredienteRepository.findById(id).orElse(null);
     }
 
-    public void excluir(Long id) {
+    // Atualizar quantidade
+    public ItemIngredienteModel atualizar(Long id, ItemIngredienteModel novo) {
+        if (id == null || novo == null) {
+            System.out.println("Dados inválidos para atualização.");
+            return null;
+        }
+
+        ItemIngredienteModel existente = itemIngredienteRepository.findById(id).orElse(null);
+
+        if (existente == null) {
+            System.out.println("Relação item-ingrediente não encontrada.");
+            return null;
+        }
+
+        existente.setQuantidade(novo.getQuantidade());
+        System.out.println("Quantidade atualizada!");
+
+        return itemIngredienteRepository.save(existente);
+    }
+
+    // Excluir relação
+    public boolean excluir(Long id) {
+        if (id == null) {
+            System.out.println("ID inválido.");
+            return false;
+        }
+
+        ItemIngredienteModel obj = itemIngredienteRepository.findById(id).orElse(null);
+
+        if (obj == null) {
+            System.out.println("Relação item-ingrediente não encontrada.");
+            return false;
+        }
+
         itemIngredienteRepository.deleteById(id);
+        System.out.println("Relação item-ingrediente removida.");
+        return true;
     }
 }

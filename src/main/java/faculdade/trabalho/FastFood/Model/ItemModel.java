@@ -1,10 +1,12 @@
 package faculdade.trabalho.FastFood.Model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "itens")
+@Table(name = "tb_item")
 public class ItemModel {
 
     @Id
@@ -15,57 +17,32 @@ public class ItemModel {
     private String descricao;
     private double preco;
 
-    @ManyToMany
-    @JoinTable(
-            name = "item_ingrediente",
-            joinColumns = @JoinColumn(name = "item_id"),
-            inverseJoinColumns = @JoinColumn(name = "ingrediente_id")
-    )
-    private List<IngredienteModel> ingredientes;
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"item"})
+    private List<ItemIngredienteModel> ingredientes = new ArrayList<>();
 
     public ItemModel() {}
 
-    public ItemModel(String nome, String descricao, double preco, List<IngredienteModel> ingredientes) {
+    public ItemModel(String nome, String descricao, double preco) {
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
-        this.ingredientes = ingredientes;
     }
 
-    // Getters e Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public String getNome() {
-        return nome;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
 
-    public String getDescricao() {
-        return descricao;
-    }
+    public double getPreco() { return preco; }
+    public void setPreco(double preco) { this.preco = preco; }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
+    public List<ItemIngredienteModel> getIngredientes() { return ingredientes; }
 
-    public double getPreco() {
-        return preco;
-    }
-
-    public void setPreco(double preco) {
-        this.preco = preco;
-    }
-
-    public List<IngredienteModel> getIngredientes() {
-        return ingredientes;
-    }
-
-    public void setIngredientes(List<IngredienteModel> ingredientes) {
+    public void setIngredientes(List<ItemIngredienteModel> ingredientes) {
         this.ingredientes = ingredientes;
     }
 }
