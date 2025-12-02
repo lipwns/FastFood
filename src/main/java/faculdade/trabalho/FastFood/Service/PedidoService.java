@@ -1,11 +1,17 @@
 package faculdade.trabalho.FastFood.Service;
 
-import faculdade.trabalho.FastFood.Model.ItemPedidoModel;
 import faculdade.trabalho.FastFood.Model.PedidoModel;
+import faculdade.trabalho.FastFood.Model.ItemPedidoModel;
+import faculdade.trabalho.FastFood.Model.ItemIngredienteModel;
+import faculdade.trabalho.FastFood.Model.IngredienteModel;
+import faculdade.trabalho.FastFood.Model.ItemModel;
 import faculdade.trabalho.FastFood.Repository.PedidoRepository;
+import faculdade.trabalho.FastFood.Repository.IngredienteRepository;
+import faculdade.trabalho.FastFood.Repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,70 +21,108 @@ public class PedidoService {
     @Autowired
     private PedidoRepository pedidoRepository;
 
-    // Criar ou atualizar pedido
-    public PedidoModel salvar(PedidoModel pedido) {
+    @Autowired
+    private IngredienteRepository ingredienteRepository;
 
-        if (pedido == null) {
-            System.out.println("Pedido inválido.");
-            return null;
-        }
+    @Autowired
+    private ItemRepository itemRepository;
 
-        // Evitar null pointer
-        if (pedido.getItens() == null || pedido.getItens().isEmpty()) {
-            pedido.setPrecoTotal(0);
-            return pedidoRepository.save(pedido);
-        }
+    // Criar pedido
+    public PedidoModel criarPedido(PedidoModel pedido) {
+        double total = 0.0;
 
-        // Recalcula o preço total baseado nos itens
-        double total = 0;
-        for (ItemPedidoModel item : pedido.getItens()) {
-            if (item.getSubtotal() == 0) {
-                double valor = item.getPrecoUnitario() * item.getQuantidade();
-                item.setSubtotal(valor);
+        for (ItemPedidoModel ip : pedido.getItens()) {
+            // Buscar o item completo no banco
+            Optional<ItemModel> opItem = itemRepository.findById(ip.getItem().getId());
+            if (opItem.isEmpty()) {
+                System.out.println("Item não encontrado no banco: " + ip.getItem().getId());
+                continue;
             }
-            total += item.getSubtotal();
-        }
-        pedido.setPrecoTotal(total);
 
-        System.out.println("Preço total do pedido atualizado: " + total);
+            ItemModel itemCompleto = opItem.get();
+            ip.setItem(itemCompleto); // substitui o item enviado pelo item completo
+
+            // Define preço unitário e subtotal do item
+            ip.setPrecoUnitario(itemCompleto.getPreco());
+            ip.setSubtotal(ip.getPrecoUnitario() * ip.getQuantidade());
+            ip.setPedido(pedido); // relaciona item ao pedido
+
+            // Reduz ingredientes do item corretamente
+            for (ItemIngredienteModel iIng : itemCompleto.getIngredientes()) {
+                IngredienteModel ing = iIng.getIngrediente();
+                int totalConsumido = iIng.getQuantidade() * ip.getQuantidade();
+                ing.setQuantidade(ing.getQuantidade() - totalConsumido);
+                ingredienteRepository.save(ing);
+            }
+
+            total += ip.getSubtotal();
+        }
+
+        pedido.setPrecoTotal(total);
+        pedido.setStatus("em espera");
+        pedido.setDataHora(LocalDateTime.now());
 
         return pedidoRepository.save(pedido);
     }
 
-    public List<PedidoModel> listarTodos() {
-        return pedidoRepository.findAll();
-    }
-
+    // Buscar por ID
     public Optional<PedidoModel> buscarPorId(Long id) {
         return pedidoRepository.findById(id);
     }
 
-    public void excluir(Long id) {
-        if (!pedidoRepository.existsById(id)) {
-            System.out.println("Pedido não encontrado para exclusão.");
-            return;
-        }
-        pedidoRepository.deleteById(id);
-        System.out.println("Pedido removido com sucesso.");
+    // Listar todos os pedidos
+    public List<PedidoModel> listarTodos() {
+        return pedidoRepository.findAll();
     }
 
-    // Avançar status do pedido
+    // Cancelar pedido
+    public void cancelarPedido(Long id) {
+        Optional<PedidoModel> opPedido = pedidoRepository.findById(id);
+
+        if (opPedido.isPresent()) {
+            PedidoModel pedido = opPedido.get();
+
+            // Só devolve ingredientes se estiver em espera
+            if (pedido.getStatus().equalsIgnoreCase("em espera")) {
+                for (ItemPedidoModel ip : pedido.getItens()) {
+                    for (ItemIngredienteModel iIng : ip.getItem().getIngredientes()) {
+                        IngredienteModel ing = iIng.getIngrediente();
+                        int totalDevolvido = iIng.getQuantidade() * ip.getQuantidade();
+                        ing.setQuantidade(ing.getQuantidade() + totalDevolvido);
+                        ingredienteRepository.save(ing);
+                    }
+                }
+            }
+
+            pedidoRepository.delete(pedido);
+        }
+    }
+
+    // Avançar status
     public void avancarStatus(PedidoModel pedido) {
-        if (pedido.getStatus().equals("em espera")) {
+        String status = pedido.getStatus();
+        if (status.equalsIgnoreCase("em espera")) {
             pedido.setStatus("em preparo");
-        } else if (pedido.getStatus().equals("em preparo")) {
-            pedido.setStatus("concluido");
+        } else if (status.equalsIgnoreCase("em preparo")) {
+            pedido.setStatus("pronto");
+        } else if (status.equalsIgnoreCase("pronto")) {
+            pedido.setStatus("entregue");
         }
-        salvar(pedido);
-        System.out.println("Status do pedido atualizado para: " + pedido.getStatus());
+
+        pedidoRepository.save(pedido);
     }
 
-    // Voltar status do pedido
+    // Voltar status
     public void voltarStatus(PedidoModel pedido) {
-        if (pedido.getStatus().equals("em preparo")) {
+        String status = pedido.getStatus();
+        if (status.equalsIgnoreCase("entregue")) {
+            pedido.setStatus("pronto");
+        } else if (status.equalsIgnoreCase("pronto")) {
+            pedido.setStatus("em preparo");
+        } else if (status.equalsIgnoreCase("em preparo")) {
             pedido.setStatus("em espera");
-            salvar(pedido);
-            System.out.println("Status do pedido retornado para: " + pedido.getStatus());
         }
+
+        pedidoRepository.save(pedido);
     }
 }

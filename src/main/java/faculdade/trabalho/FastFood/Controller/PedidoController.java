@@ -17,7 +17,7 @@ public class PedidoController {
     // Criar novo pedido
     @PostMapping
     public PedidoModel criarPedido(@RequestBody PedidoModel pedido) {
-        return pedidoService.salvar(pedido);
+        return pedidoService.criarPedido(pedido);
     }
 
     // Listar todos os pedidos
@@ -48,14 +48,14 @@ public class PedidoController {
         existente.setItens(pedidoAtualizado.getItens());
 
         // Salva e recalcula o preço total
-        return pedidoService.salvar(existente);
+        return pedidoService.criarPedido(existente);
     }
 
     // Excluir pedido
     @DeleteMapping("/{id}")
     public String excluirPedido(@PathVariable Long id) {
         if (pedidoService.buscarPorId(id).isPresent()) {
-            pedidoService.excluir(id);
+            pedidoService.cancelarPedido(id);
             return "Pedido removido com sucesso.";
         } else {
             return "Pedido não encontrado.";

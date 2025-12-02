@@ -1,7 +1,9 @@
 package faculdade.trabalho.FastFood.Model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,7 +23,8 @@ public class PedidoModel {
     private LocalDateTime dataHora;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
-    private List<ItemPedidoModel> itens;
+    @JsonManagedReference
+    private List<ItemPedidoModel> itens = new ArrayList<>();
 
     public PedidoModel() {
         this.status = "em espera";
