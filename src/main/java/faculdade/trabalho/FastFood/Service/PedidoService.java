@@ -27,27 +27,38 @@ public class PedidoService {
     @Autowired
     private ItemRepository itemRepository;
 
-    // Criar pedido
+    // Criar pedido com validação de estoque
     public PedidoModel criarPedido(PedidoModel pedido) {
         double total = 0.0;
 
+        // Verifica estoque antes de criar
         for (ItemPedidoModel ip : pedido.getItens()) {
-            // Buscar o item completo no banco
             Optional<ItemModel> opItem = itemRepository.findById(ip.getItem().getId());
             if (opItem.isEmpty()) {
                 System.out.println("Item não encontrado no banco: " + ip.getItem().getId());
-                continue;
+                return null;
             }
 
             ItemModel itemCompleto = opItem.get();
-            ip.setItem(itemCompleto); // substitui o item enviado pelo item completo
 
-            // Define preço unitário e subtotal do item
+            for (ItemIngredienteModel iIng : itemCompleto.getIngredientes()) {
+                IngredienteModel ing = iIng.getIngrediente();
+                int totalNecessario = iIng.getQuantidade() * ip.getQuantidade();
+                if (ing.getQuantidade() < totalNecessario) {
+                    System.out.println("Estoque insuficiente para: " + ing.getNome());
+                    return null;
+                }
+            }
+        }
+
+        // Reduz estoque e calcula total
+        for (ItemPedidoModel ip : pedido.getItens()) {
+            ItemModel itemCompleto = itemRepository.findById(ip.getItem().getId()).get();
+            ip.setItem(itemCompleto);
             ip.setPrecoUnitario(itemCompleto.getPreco());
             ip.setSubtotal(ip.getPrecoUnitario() * ip.getQuantidade());
-            ip.setPedido(pedido); // relaciona item ao pedido
+            ip.setPedido(pedido);
 
-            // Reduz ingredientes do item corretamente
             for (ItemIngredienteModel iIng : itemCompleto.getIngredientes()) {
                 IngredienteModel ing = iIng.getIngrediente();
                 int totalConsumido = iIng.getQuantidade() * ip.getQuantidade();
@@ -65,14 +76,31 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
+    // Salvar pedido atualizado sem tocar no estoque
+    public PedidoModel salvarPedido(PedidoModel pedido) {
+        double total = 0.0;
+        for (ItemPedidoModel ip : pedido.getItens()) {
+            if (ip.getItem() != null) {
+                ip.setSubtotal(ip.getPrecoUnitario() * ip.getQuantidade());
+            }
+            total += ip.getSubtotal();
+        }
+        pedido.setPrecoTotal(total);
+
+        return pedidoRepository.save(pedido);
+    }
+
     // Buscar por ID
     public Optional<PedidoModel> buscarPorId(Long id) {
         return pedidoRepository.findById(id);
     }
 
-    // Listar todos os pedidos
+    // Listar todos os pedidos **ativos** (exclui entregues)
     public List<PedidoModel> listarTodos() {
-        return pedidoRepository.findAll();
+        return pedidoRepository.findAll()
+                .stream()
+                .filter(p -> !p.getStatus().equalsIgnoreCase("entregue"))
+                .toList();
     }
 
     // Cancelar pedido
@@ -82,7 +110,6 @@ public class PedidoService {
         if (opPedido.isPresent()) {
             PedidoModel pedido = opPedido.get();
 
-            // Só devolve ingredientes se estiver em espera
             if (pedido.getStatus().equalsIgnoreCase("em espera")) {
                 for (ItemPedidoModel ip : pedido.getItens()) {
                     for (ItemIngredienteModel iIng : ip.getItem().getIngredientes()) {

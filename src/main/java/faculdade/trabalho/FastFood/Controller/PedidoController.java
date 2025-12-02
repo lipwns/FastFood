@@ -1,6 +1,7 @@
 package faculdade.trabalho.FastFood.Controller;
 
 import faculdade.trabalho.FastFood.Model.PedidoModel;
+import faculdade.trabalho.FastFood.Model.ItemPedidoModel;
 import faculdade.trabalho.FastFood.Service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -42,13 +43,21 @@ public class PedidoController {
             return null;
         }
 
-        // Atualiza campos permitidos
+        // Atualiza campos simples
         existente.setNome(pedidoAtualizado.getNome());
         existente.setFormaPagamento(pedidoAtualizado.getFormaPagamento());
-        existente.setItens(pedidoAtualizado.getItens());
 
-        // Salva e recalcula o preço total
-        return pedidoService.criarPedido(existente);
+        // Atualiza itens: garante que cada item referencie o pedido correto
+        if (pedidoAtualizado.getItens() != null) {
+            existente.getItens().clear(); // limpa itens antigos se quiser substituir
+            for (ItemPedidoModel ip : pedidoAtualizado.getItens()) {
+                ip.setPedido(existente); // vincula item ao pedido existente
+                existente.getItens().add(ip);
+            }
+        }
+
+        // Salva o pedido atualizado sem tocar no estoque
+        return pedidoService.salvarPedido(existente);
     }
 
     // Excluir pedido
