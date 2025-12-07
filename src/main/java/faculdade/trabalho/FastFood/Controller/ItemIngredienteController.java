@@ -2,6 +2,7 @@ package faculdade.trabalho.FastFood.Controller;
 
 import faculdade.trabalho.FastFood.Model.ItemIngredienteModel;
 import faculdade.trabalho.FastFood.Service.ItemIngredienteService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,10 +10,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/item-ingredientes")
+@RequiredArgsConstructor
 public class ItemIngredienteController {
-
-    @Autowired
-    private ItemIngredienteService itemIngredienteService;
+    private final ItemIngredienteService itemIngredienteService;
 
     // Criar relação item-ingrediente
     @PostMapping

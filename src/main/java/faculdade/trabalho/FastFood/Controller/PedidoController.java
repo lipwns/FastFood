@@ -3,6 +3,7 @@ package faculdade.trabalho.FastFood.Controller;
 import faculdade.trabalho.FastFood.Model.PedidoModel;
 import faculdade.trabalho.FastFood.Model.ItemPedidoModel;
 import faculdade.trabalho.FastFood.Service.PedidoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +11,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/pedidos")
+@RequiredArgsConstructor
 public class PedidoController {
-
-    @Autowired
-    private PedidoService pedidoService;
+    private final PedidoService pedidoService;
 
     // Criar novo pedido
     @PostMapping

@@ -2,6 +2,7 @@ package faculdade.trabalho.FastFood.Service;
 
 import faculdade.trabalho.FastFood.Model.IngredienteModel;
 import faculdade.trabalho.FastFood.Repository.IngredienteRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,10 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class IngredienteService {
-
-    @Autowired
-    private IngredienteRepository ingredienteRepository;
+    private final IngredienteRepository ingredienteRepository;
 
     // Adicionar ingrediente (se existe, soma quantidade)
     public IngredienteModel adicionarIngrediente(IngredienteModel novo) {
@@ -65,7 +65,7 @@ public class IngredienteService {
 
         Optional<IngredienteModel> existenteOpt = ingredienteRepository.findById(id);
 
-        if (!existenteOpt.isPresent()) {
+        if (existenteOpt.isEmpty()) {
             System.out.println("Ingrediente não encontrado!");
             return null;
         }

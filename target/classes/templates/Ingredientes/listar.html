@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Ingredientes</title>
+    <link th:href="@{/styles/css/style.css}" rel="stylesheet"/>
+</head>
+<body>
+
+    <!-- Cabeçalho com círculo -->
+    <div class="header">
+        <div class="logo-circle"></div>
+    </div>
+
+    <!-- Menu superior -->
+    <div class="menu">
+        <div class="botoes-nav">
+            <button class="btn active">Ingredientes</button>
+            <button class="btn">Cardápio</button>
+            <button class="btn">Pedidos</button>
+        </div>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="container">
+
+        <!-- Barra lateral -->
+        <div class="sidebar">
+            <div class="side-btns">
+                <button class="side-btn azul">Adicionar Ingrediente</button>
+                <button class="side-btn azul">Consultar Ingrediente</button>
+            </div>
+        </div>
+
+        <!-- Tabela -->
+        <div class="tabela-area">
+            <h2>Estoque Ingredientes</h2>
+
+            <table class="tabela">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Quantidade</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr th:each="ingredientes: ${ingredient}">
+                    <td th:text="${ingredientes.id}"></td>
+                    <td th:text="${ingredientes.nome}"></td>
+                    <td th:text="${ingredientes.quantidade}"></td>
+                    <td>
+                        <div class="action-buttons">
+                            <a th:href="@{/fastfood/alterar/{id}(id=${ingredientes.id})}">Alterar</a>
+                            <a th:href="@{/fastfood/deletar/ingredientes/{id}(id=${ingredientes.id})}">Apagar</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>

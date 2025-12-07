@@ -2,9 +2,17 @@ package faculdade.trabalho.FastFood.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "tb_item_pedido")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ItemPedidoModel {
 
     @Id
@@ -26,8 +34,6 @@ public class ItemPedidoModel {
     @JoinColumn(name = "item_id")
     private ItemModel item;
 
-    public ItemPedidoModel() {}
-
     public ItemPedidoModel(ItemModel item, int quantidade) {
         this.item = item;
         this.quantidade = quantidade;
@@ -35,12 +41,8 @@ public class ItemPedidoModel {
         this.subtotal = this.precoUnitario * quantidade;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public int getQuantidade() {
-        return quantidade;
+    private void atualizarSubtotal() {
+        this.subtotal = this.precoUnitario * this.quantidade;
     }
 
     public void setQuantidade(int quantidade) {
@@ -48,37 +50,9 @@ public class ItemPedidoModel {
         atualizarSubtotal();
     }
 
-    public double getPrecoUnitario() {
-        return precoUnitario;
-    }
-
     public void setPrecoUnitario(double precoUnitario) {
         this.precoUnitario = precoUnitario;
         atualizarSubtotal();
-    }
-
-    public double getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(double subtotal) {
-        this.subtotal = subtotal;
-    }
-
-    private void atualizarSubtotal() {
-        this.subtotal = this.precoUnitario * this.quantidade;
-    }
-
-    public PedidoModel getPedido() {
-        return pedido;
-    }
-
-    public void setPedido(PedidoModel pedido) {
-        this.pedido = pedido;
-    }
-
-    public ItemModel getItem() {
-        return item;
     }
 
     public void setItem(ItemModel item) {
