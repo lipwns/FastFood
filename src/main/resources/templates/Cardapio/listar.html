@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio</title>
+    <link rel="stylesheet" th:href="@{/styles/css/listas.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/css/obrigatorio.css}"/>
+</head>
+<body>
+
+<!-- Cabeçalho -->
+<div class="header">
+    <img width="90px" height="90px" th:src="@{/images/bk.png}" alt="Logo do projeto"/>
+</div>
+
+<!-- Menu Superior -->
+<div class="menu">
+    <div class="botoes-nav">
+        <a th:href="@{/fastfood/ingredientes/listar}" class="btn">Ingredientes</a>
+        <a th:href="@{redirect:/Cardapio/listar}" class="btn active">Cardápio</a>
+        <button class="btn">Pedidos</button>
+    </div>
+</div>
+
+<!-- Corpo -->
+<div class="container">
+
+    <!-- Sidebar -->
+    <div class="left-side">
+        <div class="sidebar">
+            <a th:href="@{/fastfood/cardapio/criar}" class="side-btn azul">Adicionar Item</a>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="tabela-area">
+        <h2>Cardápio</h2>
+
+        <table class="tabela">
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Valor (R$)</th>
+                <th>Descrição</th>
+                <th>Ingredientes</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="itens: ${itens}">
+                <td th:text="${itens.nome}"></td>
+                <td th:text="${#numbers.formatDecimal(itens.preco, 1, 'POINT', 2, 'COMMA')}"></td>
+                <td th:text="${itens.descricao}"></td>
+                <td>
+                            <span th:if="${itens.ingredientes != null && !itens.ingredientes.isEmpty()}">
+                                <span th:each="itemIng, iterStat : ${itens.ingredientes}">
+                                    <span th:text="${itemIng.quantidade + 'x ' + itemIng.ingrediente.nome}"></span><span th:if="${!iterStat.last}">, </span>
+                                </span>
+                            </span>
+                    <span th:if="${itens.ingredientes == null || itens.ingredientes.isEmpty()}"
+                          style="color: #999; font-style: italic;">
+                                Sem ingredientes
+                            </span>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/fastfood/cardapio/alterar/{id}(id=${itens.id})}">Alterar</a>
+                        <a th:href="@{/fastfood/cardapio/deletar/{id}(id=${itens.id})}"
+                           onclick="return confirm('Tem certeza que deseja apagar este item?')">
+                            Apagar
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+.menu .btn.active {
+    background: #3ca33c;
+}
+
+.side-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.azul { background: #3ba53c; }
+
+/* Tabela */
+.tabela-area {
+    min-width: 60%;
+}
+
+.tabela-area h2 {
+    margin-bottom: 15px;
+}
+
+.tabela {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 18px;
+}
+
+.tabela th, .tabela td {
+    border: 4px solid black;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .sidebar {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .side-btn {
+        flex: 1 1 40%;
+        max-width: 200px;
+    }
+}

@@ -6,6 +6,7 @@ import faculdade.trabalho.FastFood.Model.ItemModel;
 import faculdade.trabalho.FastFood.Repository.IngredienteRepository;
 import faculdade.trabalho.FastFood.Repository.ItemIngredienteRepository;
 import faculdade.trabalho.FastFood.Repository.ItemRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +15,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ItemService {
-
-    @Autowired
-    private ItemRepository itemRepository;
-
-    @Autowired
-    private IngredienteRepository ingredienteRepository;
-
-    @Autowired
-    private ItemIngredienteRepository itemIngredienteRepository;
+    private final ItemRepository itemRepository;
+    private final IngredienteRepository ingredienteRepository;
+    private final ItemIngredienteRepository itemIngredienteRepository;
 
 
     //criar item
@@ -39,7 +35,7 @@ public class ItemService {
         novoItem.setDescricao(item.getDescricao());
         novoItem.setPreco(item.getPreco());
 
-        List<ItemIngredienteModel> ligações = new ArrayList<>();
+        List<ItemIngredienteModel> ligacoes = new ArrayList<>();
 
         for (ItemIngredienteModel lig : item.getIngredientes()) {
 
@@ -67,10 +63,10 @@ public class ItemService {
             novaLigacao.setQuantidade(lig.getQuantidade());
             novaLigacao.setItem(novoItem);
 
-            ligações.add(novaLigacao);
+            ligacoes.add(novaLigacao);
         }
 
-        novoItem.setIngredientes(ligações);
+        novoItem.setIngredientes(ligacoes);
         return itemRepository.save(novoItem);
     }
 
@@ -147,7 +143,6 @@ public class ItemService {
     public void excluir(Long id) {
         if (!itemRepository.existsById(id)) {
             System.out.println("Item não encontrado para deletar!");
-            return;
         }
 
         itemRepository.deleteById(id);

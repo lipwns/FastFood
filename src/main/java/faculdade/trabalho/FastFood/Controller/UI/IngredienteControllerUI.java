@@ -12,22 +12,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/fastfood")
+@RequestMapping("/fastfood/ingredientes")
 @RequiredArgsConstructor
 public class IngredienteControllerUI {
     private final IngredienteService ingredienteService;
 
-    @GetMapping("/listar/ingredientes")
+    @GetMapping("/listar")
     public String listarIngredientes(Model model) {
         List<IngredienteModel> ingredientes = ingredienteService.listarTodos();
         model.addAttribute("ingredient", ingredientes);
         return "Ingredientes/listar";
     }
 
-    @GetMapping("/deletar/ingredientes/{id}")
+    @GetMapping("/deletar/{id}")
     public String deletarIngredienteID(@PathVariable Long id) {
         ingredienteService.excluir(id);
-        return "redirect:/fastfood/listar/ingredientes";
+        return "redirect:/fastfood/ingredientes/listar";
     }
 
     @GetMapping("/alterar/{id}")
@@ -37,7 +37,7 @@ public class IngredienteControllerUI {
             model.addAttribute("ingrediente", ingrediente);
             return "Ingredientes/alterar";
         }
-        return "redirect:/fastfood/listar/ingredientes";
+        return "redirect:/fastfood/ingredientes/listar";
     }
 
     @PostMapping("/atualizar")
@@ -46,7 +46,7 @@ public class IngredienteControllerUI {
 
         if (ingredienteAtualizado != null) {
             model.addAttribute("mensagem", "Ingrediente atualizado com sucesso!");
-            return "redirect:/fastfood/listar/ingredientes";
+            return "redirect:/fastfood/ingredientes/listar";
         }
 
         model.addAttribute("mensagem", "Erro ao atualizar ingrediente!");
@@ -61,17 +61,17 @@ public class IngredienteControllerUI {
 
     @PostMapping("/salvar")
     public String salvarNinja(@ModelAttribute("ingrediente") IngredienteModel ingrediente, BindingResult result, Model model) {
-        if (result.hasErrors()) return "Ninja/adicionarNinja";
+        if (result.hasErrors()) return "Ingredientes/adicionar";
         try {
             IngredienteModel ingredienteSalvo = ingredienteService.adicionarIngrediente(ingrediente);
 
             if (ingredienteSalvo == null) {
                 model.addAttribute("mensagem", "Ocorreu um erro!");
-                return "Ninja/adicionarNinja";
+                return "Ingredientes/adicionar";
             }
 
-            model.addAttribute("mensagem", "Ninja cadastrado com sucesso!");
-            return "redirect:/ninjas/ui/listar";
+            model.addAttribute("mensagem", "Ingrediente cadastrado com sucesso!");
+            return "redirect:/fastfood/ingredientes/listar";
 
         } catch (DataIntegrityViolationException e) {
             model.addAttribute("mensagem", "Ocorreu um erro!");

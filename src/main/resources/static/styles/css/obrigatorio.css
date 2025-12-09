@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Inter, sans-serif;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2ebdb;
+}
+
+a {
+    text-decoration: none;
+    text-align: center;
+}
+
+.header {
+    background: #5c230e;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    padding-left: 25px;
+}
+
+/* Menu superior */
+.menu {
+    display: flex;
+    background: #d02d0f;
+    height: 60px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.botoes-nav {
+    display: flex;
+    width: 70%;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.menu .btn {
+    border: none;
+    padding: 12px 45px;
+    border-radius: 999px;
+    background: #3ca33c;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.menu .btn:not(.active) {
+    background: #F2A900;
+}
+
+/* Container principal */
+.container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Barra lateral */
+.left-side {
+    display: flex;
+    align-items: flex-start;
+    width: 180px;
+    height: auto;
+    padding: 2px;
+    border-radius: 16px;
+}
+
+.side-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 16px;
+    font-size: 18px;
+    cursor: pointer;
+    color: white;
+    width: 100%;
+    height: 100%;
+    border: white;
+}
+
+a.side-btn {
+    display: flex;
+    text-decoration: none;
+    justify-content: center;
+    color: white;
+}
+
+/* Área principal */
+.tabela-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.tabela-area h2 {
+    margin-bottom: 15px;
+}
+
+/* Tabela */
+.tabela {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 18px;
+}
+
+.tabela th, .tabela td {
+    border: 2px solid black;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .botoes-nav {
+        width: 100%;
+    }
+
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        height: auto;
+    }
+
+    .side-btn {
+        flex: 1 1 45%;
+        max-width: 200px;
+    }
+
+    .tabela {
+        font-size: 16px;
+    }
+}
+

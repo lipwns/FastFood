@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Ingredientes</title>
+    <link rel="stylesheet" th:href="@{/styles/css/forms.css}">
+    <link rel="stylesheet" th:href="@{/styles/css/obrigatorio.css}">
+</head>
+<body>
+
+    <!-- Cabeçalho com círculo -->
+    <div class="header">
+        <img width="90px" height="90px" th:src="@{/images/bk.png}" alt="Logo do projeto"/>
+    </div>
+
+    <!-- Menu superior -->
+    <div class="menu">
+        <div class="botoes-nav">
+            <a class="btn active" th:href="@{/fastfood/ingredientes/listar}">Ingredientes</a>
+            <a class="btn" th:href="@{/fastfoot/cardapio/listar}">Cardápio</a>
+            <button class="btn">Pedidos</button>
+        </div>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="container-form">
+        <!-- Tabela -->
+        <div class="form">
+            <h1>Atualizar Ingredientes</h1>
+
+            <form th:action="@{/fastfood/ingredientes/atualizar}" th:object="${ingrediente}" method="post">
+                <input type="hidden" th:field="*{id}" />
+
+                <label for="nomeIng">Nome do ingrediente:</label>
+                <input type="text" id="nomeIng" th:field="*{nome}" placeholder="Ex: Tomate" autocomplete="off" required minlength="2"/>
+
+                <label for="quantIng">Quantidade:</label>
+                <input type="number" id="quantIng" th:field="*{quantidade}" placeholder="Ex: 5" min="1" autocomplete="off" required/>
+
+                <button type="submit">Atualizar</button>
+            </form>
+        </div>
+
+    </div>
+</body>
+</html>

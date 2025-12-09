@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Item</title>
+    <link rel="stylesheet" th:href="@{/styles/css/obrigatorio.css}">
+    <link rel="stylesheet" th:href="@{/styles/css/forms.css}">
+    <link rel="stylesheet" th:href="@{/styles/css/cardapioAdicionar.css}">
+</head>
+<body>
+
+<!-- Cabeçalho -->
+<div class="header">
+    <img width="90px" height="90px" th:src="@{/images/bk.png}" alt="Logo do projeto"/>
+</div>
+
+<!-- Menu Superior -->
+<div class="menu">
+    <div class="botoes-nav">
+        <a class="btn" th:href="@{/fastfood/ingredientes/listar}">Ingredientes</a>
+        <a class="btn active" th:href="@{/fastfood/cardapio/listar}">Cardápio</a>
+        <button class="btn">Pedidos</button>
+    </div>
+</div>
+
+<!-- Corpo -->
+<div class="container-form">
+    <!-- Formulário -->
+    <div class="form">
+        <h1>Adicionar Item ao Cardápio</h1>
+
+        <form th:action="@{/fastfood/cardapio/salvar}" th:object="${item}" method="post">
+            <label for="nome">Nome do Item:</label>
+            <input type="text" id="nome" th:field="*{nome}" placeholder="Ex: X-Burger" autocomplete="off" required/>
+
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" th:field="*{descricao}" placeholder="Ex: Pão, carne, queijo" rows="4" cols="45" maxlength="255" required></textarea>
+
+            <label for="valor">Valor (R$):</label>
+            <input type="number" id="valor" th:field="*{preco}" step="0.01" min="0" placeholder="Ex: 15.50" required/>
+
+            <!-- Seção de Ingredientes -->
+            <div class="ingredientes-section">
+                <h3>Ingredientes do Item</h3>
+                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                    Selecione os ingredientes e defina as quantidades:
+                </p>
+
+                <div th:if="${ingredientesDisponiveis != null and !ingredientesDisponiveis.isEmpty()}">
+                    <div th:each="ing, iterStat : ${ingredientesDisponiveis}" class="ingrediente-item">
+                        <input type="checkbox"
+                               th:id="'check_' + ${ing.id}"
+                               name="ingredientesSelecionados"
+                               th:value="${ing.id}"
+                               onclick="toggleQuantidade(this)"/>
+
+                        <label th:for="'check_' + ${ing.id}" th:text="${ing.nome}">Ingrediente</label>
+
+                        <input type="number"
+                               th:id="'qtd_' + ${ing.id}"
+                               th:name="'ingredientes[' + ${iterStat.index} + '].quantidade'"
+                               min="1"
+                               value="1"
+                               placeholder="Qtd"
+                               disabled/>
+
+                        <input type="hidden"
+                               th:id="'id_' + ${ing.id}"
+                               th:name="'ingredientes[' + ${iterStat.index} + '].ingrediente.id'"
+                               th:value="${ing.id}"/>
+                    </div>
+                </div>
+
+                <div th:if="${ingredientesDisponiveis == null or ingredientesDisponiveis.isEmpty()}">
+                    <p style="color: #999;">Nenhum ingrediente cadastrado.</p>
+                    <a class="btn-ingredientes" th:href="@{/fastfood/ingredientes/criar}">
+                        Cadastrar Ingredientes
+                    </a>
+                </div>
+            </div>
+
+            <button type="submit">Adicionar Item</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleQuantidade(checkbox) {
+        const id = checkbox.value;
+        const qtdInput = document.getElementById('qtd_' + id);
+        const idInput = document.getElementById('id_' + id);
+
+        if (checkbox.checked) {
+            qtdInput.disabled = false;
+            qtdInput.required = true;
+        } else {
+            qtdInput.disabled = true;
+            qtdInput.required = false;
+            qtdInput.value = '1';
+        }
+    }
+
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]:not(:checked)');
+        checkboxes.forEach(function(checkbox) {
+            const id = checkbox.value;
+            const qtdInput = document.getElementById('qtd_' + id);
+            const idInput = document.getElementById('id_' + id);
+
+            if (qtdInput) qtdInput.remove();
+            if (idInput) idInput.remove();
+        });
+    });
+</script>
+</body>
+</html>

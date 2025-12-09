@@ -17,8 +17,6 @@ public class IngredienteModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nome;
-
     private int quantidade; // quantidade em estoque
 }

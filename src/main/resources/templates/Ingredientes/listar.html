@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interface Ingredientes</title>
-    <link th:href="@{/styles/css/style.css}" rel="stylesheet"/>
+    <title>Ingredientes</title>
+    <link rel="stylesheet" th:href="@{/styles/css/listas.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/css/obrigatorio.css}"/>
 </head>
 <body>
 
-    <!-- Cabeçalho com círculo -->
+    <!-- Cabeçalho -->
     <div class="header">
-        <div class="logo-circle"></div>
+        <img width="90px" height="90px" th:src="@{/images/bk.png}" alt="Logo do projeto"/>
     </div>
 
     <!-- Menu superior -->
     <div class="menu">
         <div class="botoes-nav">
-            <button class="btn active">Ingredientes</button>
-            <button class="btn">Cardápio</button>
+            <a th:href="@{redirect:/Ingredientes/listar}" class="btn active">Ingredientes</a>
+            <a th:href="@{/fastfood/cardapio/listar}" class="btn">Cardápio</a>
             <button class="btn">Pedidos</button>
         </div>
     </div>
@@ -25,13 +26,12 @@
     <!-- Conteúdo principal -->
     <div class="container">
 
-        <!-- Barra lateral -->
-        <div class="sidebar">
-            <div class="side-btns">
-                <button class="side-btn azul">Adicionar Ingrediente</button>
-                <button class="side-btn azul">Consultar Ingrediente</button>
+        <div class="left-side">
+            <div class="sidebar">
+                <a th:href="@{/fastfood/ingredientes/criar}" class="side-btn azul">Adicionar Ingrediente</a>
             </div>
         </div>
+        <!-- Barra lateral -->
 
         <!-- Tabela -->
         <div class="tabela-area">
@@ -40,28 +40,28 @@
             <table class="tabela">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Quantidade</th>
+                        <th >Nome</th>
+                        <th style="width: 15%">Quantidade</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                 <tr th:each="ingredientes: ${ingredient}">
-                    <td th:text="${ingredientes.id}"></td>
                     <td th:text="${ingredientes.nome}"></td>
                     <td th:text="${ingredientes.quantidade}"></td>
                     <td>
                         <div class="action-buttons">
-                            <a th:href="@{/fastfood/alterar/{id}(id=${ingredientes.id})}">Alterar</a>
-                            <a th:href="@{/fastfood/deletar/ingredientes/{id}(id=${ingredientes.id})}">Apagar</a>
+                            <a th:href="@{/fastfood/ingredientes/alterar/{id}(id=${ingredientes.id})}">Alterar</a>
+                            <a th:href="@{/fastfood/ingredientes/deletar/{id}(id=${ingredientes.id})}"
+                               onclick="return confirm('Tem certeza que deseja apagar este ingrediente?')">
+                                Apagar
+                            </a>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
-
     </div>
 </body>
 </html>
