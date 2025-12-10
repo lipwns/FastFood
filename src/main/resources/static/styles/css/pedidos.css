@@ -38,8 +38,10 @@
 }
 
 /* ===== BOTÕES ===== */
-.azul { background: #3ca33c; }
-.vermelho { background: #dc3545; }
+.azul { background: #3ca33c; transition: 0.25s}
+.azul:hover { background: #266a26; }
+.vermelho { background: #dc3545; transition: 0.25s}
+.vermelho:hover { background: #952530; }
 
 /* Botões duplos */
 .duplo {
