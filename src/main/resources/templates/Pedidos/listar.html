@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedidos</title>
+    <link rel="stylesheet" th:href="@{/styles/css/obrigatorio.css}">
+    <link rel="stylesheet" th:href="@{/styles/css/listas.css}">
+    <link rel="stylesheet" th:href="@{/styles/css/pedidos.css}">
+</head>
+<body>
+
+<div class="header">
+    <img width="90px" height="90px" th:src="@{/images/bk.png}" alt="Logo do projeto"/>
+</div>
+
+<div class="menu">
+    <div class="botoes-nav">
+        <a class="btn" th:href="@{/fastfood/ingredientes/listar}">Ingredientes</a>
+        <a class="btn" th:href="@{/fastfood/cardapio/listar}">Cardápio</a>
+        <a class="btn active" th:href="@{/fastfood/pedidos/listar}">Pedidos</a>
+    </div>
+</div>
+
+<div class="container-pedidos">
+    <!-- Sidebar -->
+    <div class="left-side">
+        <div class="sidebar">
+            <a th:href="@{/fastfood/pedidos/criar}" class="side-btn azul">Adicionar Pedido</a>
+        </div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <main class="conteudo">
+
+        <!-- ======================================
+             COLUNA 1 - EM ESPERA
+        ======================================= -->
+        <div class="coluna">
+            <h2>Pedidos em Espera</h2>
+
+            <div class="pedido-card"
+                 th:each="pedido : ${pedidos}"
+                 th:if="${pedido.status == 'em espera'}">
+
+                <p>
+                    <strong th:text="${pedido.nome}"></strong><br>
+                    <span th:each="itemPed, iterStat : ${pedido.itens}">
+                    <span th:text="${itemPed.quantidade + 'x ' + itemPed.item.nome}"></span><span th:if="${!iterStat.last}">, </span></span>
+                </p>
+
+                <span th:text="'R$' + ${#numbers.formatDecimal(pedido.precoTotal, 1, 'POINT', 2, 'COMMA')}"></span>
+
+                <!-- Botão: avançar pedido para "Em preparo" -->
+                <div class="duplo">
+                    <a class="btn vermelho" th:href="@{/fastfood/pedidos/cancelar/{id}(id=${pedido.id})}"
+                       onclick="return confirm('Tem certeza que deseja cancelar este pedido?')">Cancelar</a>
+                    <a class="btn azul" th:href="@{/fastfood/pedidos/avancar/{id}(id=${pedido.id})}">Avançar</a>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ======================================
+             COLUNA 2 - EM PREPARO
+        ======================================= -->
+        <div class="coluna">
+            <h2>Pedidos em Preparo</h2>
+
+            <div class="pedido-card"
+                 th:each="pedido : ${pedidos}"
+                 th:if="${pedido.status == 'em preparo'}">
+
+                <p>
+                    <strong th:text="${pedido.nome}"></strong><br>
+                    <span th:each="itemPed, iterStat : ${pedido.itens}">
+                    <span th:text="${itemPed.quantidade + 'x ' + itemPed.item.nome}"></span><span th:if="${!iterStat.last}">, </span></span>
+                    <span th:text="${pedido.formaPagamento}"></span>
+                </p>
+
+                <span th:text="'R$' + ${#numbers.formatDecimal(pedido.precoTotal, 1, 'POINT', 2, 'COMMA')}"></span>
+
+                <div class="duplo">
+                    <!-- Retornar para "Em espera" -->
+                    <a class="btn vermelho" th:href="@{/fastfood/pedidos/voltar/{id}(id=${pedido.id})}">Retornar</a>
+
+                    <!-- Concluir pedido (ir para concluído) -->
+                    <a class="btn azul" th:href="@{/fastfood/pedidos/avancar/{id}(id=${pedido.id})}">Concluir</a>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- ======================================
+             COLUNA 3 - CONCLUÍDOS
+        ======================================= -->
+        <div class="coluna">
+            <h2>Pedidos Concluídos</h2>
+
+            <div class="pedido-card"
+                 th:each="pedido : ${pedidos}"
+                 th:if="${pedido.status == 'pronto'}">
+
+                <p>
+                    <strong th:text="${pedido.nome}"></strong><br>
+                    <span th:each="itemPed, iterStat : ${pedido.itens}">
+                    <span th:text="${itemPed.quantidade + 'x ' + itemPed.item.nome}"></span><span th:if="${!iterStat.last}">, </span></span>
+                </p>
+
+                <span th:text="'R$' + ${#numbers.formatDecimal(pedido.precoTotal, 1, 'POINT', 2, 'COMMA')}"></span>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

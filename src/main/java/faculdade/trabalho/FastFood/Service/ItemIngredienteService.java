@@ -2,16 +2,15 @@ package faculdade.trabalho.FastFood.Service;
 
 import faculdade.trabalho.FastFood.Model.ItemIngredienteModel;
 import faculdade.trabalho.FastFood.Repository.ItemIngredienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ItemIngredienteService {
-
-    @Autowired
-    private ItemIngredienteRepository itemIngredienteRepository;
+    private final ItemIngredienteRepository itemIngredienteRepository;
 
     // Criar relação item-ingrediente
     public ItemIngredienteModel adicionar(ItemIngredienteModel obj) {

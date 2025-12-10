@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Pedido</title>
+    <link rel="stylesheet" th:href="@{/styles/css/obrigatorio.css}">
+    <link rel="stylesheet" th:href="@{/styles/css/forms.css}">
+    <style>
+        .form {
+            width: 600px;
+        }
+
+        .form textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #777;
+            margin-top: 6px;
+            font-family: Inter, sans-serif;
+        }
+
+        .form select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #777;
+            margin-top: 6px;
+            font-size: 16px;
+        }
+
+        .itens-section {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .item-pedido {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+        }
+
+        .item-pedido label {
+            flex: 1;
+            margin: 0;
+            font-weight: normal;
+        }
+
+        .item-pedido input[type="number"] {
+            width: 80px;
+            padding: 5px;
+        }
+
+        .item-pedido input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .item-pedido .preco {
+            color: #3ca33c;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .mensagem-erro {
+            color: #d02d0f;
+            background-color: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .total-section {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .total-section span {
+            color: #3ca33c;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Cabeçalho -->
+<div class="header">
+    <img width="90px" height="90px" th:src="@{/images/bk.png}" alt="Logo do projeto"/>
+</div>
+
+<!-- Menu Superior -->
+<div class="menu">
+    <div class="botoes-nav">
+        <a class="btn" th:href="@{/fastfood/ingredientes/listar}">Ingredientes</a>
+        <a class="btn" th:href="@{/fastfood/cardapio/listar}">Cardápio</a>
+        <a class="btn active" th:href="@{/fastfood/pedidos/listar}">Pedidos</a>
+    </div>
+</div>
+
+<!-- Corpo -->
+<div class="container-form">
+    <!-- Formulário -->
+    <div class="form">
+        <h1>Criar Novo Pedido</h1>
+
+        <!-- Mensagem de erro -->
+        <div th:if="${mensagem}" class="mensagem-erro" th:text="${mensagem}"></div>
+
+        <form th:action="@{/fastfood/pedidos/salvar}" th:object="${pedido}" method="post">
+
+            <label for="nome">Nome do Cliente:</label>
+            <input type="text" id="nome" th:field="*{nome}" placeholder="Ex: João Silva" autocomplete="off" required minlength="2"/>
+
+            <label for="formaPagamento">Forma de Pagamento:</label>
+            <select id="formaPagamento" th:field="*{formaPagamento}" required>
+                <option value="">Selecione...</option>
+                <option value="Dinheiro">Dinheiro</option>
+                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                <option value="Cartão de Débito">Cartão de Débito</option>
+                <option value="PIX">PIX</option>
+            </select>
+
+            <!-- Seção de Itens do Pedido -->
+            <div class="itens-section">
+                <h3>Itens do Pedido</h3>
+                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                    Selecione os itens e defina as quantidades:
+                </p>
+
+                <div th:if="${itensDisponiveis != null and !itensDisponiveis.isEmpty()}">
+                    <div th:each="item, iterStat : ${itensDisponiveis}" class="item-pedido">
+                        <input type="checkbox"
+                               th:id="'check_' + ${item.id}"
+                               name="itensSelecionados"
+                               th:value="${item.id}"
+                               onclick="toggleQuantidade(this)"
+                               onchange="calcularTotal()"/>
+
+                        <label th:for="'check_' + ${item.id}">
+                            <span th:text="${item.nome}">Item</span>
+                        </label>
+
+                        <span class="preco" th:text="'R$ ' + ${#numbers.formatDecimal(item.preco, 1, 'COMMA', 2, 'POINT')}">R$ 0,00</span>
+
+                        <input type="number"
+                               th:id="'qtd_' + ${item.id}"
+                               th:name="'itens[' + ${iterStat.index} + '].quantidade'"
+                               th:data-preco="${item.preco}"
+                               min="1"
+                               value="1"
+                               placeholder="Qtd"
+                               disabled
+                               onchange="calcularTotal()"/>
+
+                        <input type="hidden"
+                               th:id="'itemId_' + ${item.id}"
+                               th:name="'itens[' + ${iterStat.index} + '].item.id'"
+                               th:value="${item.id}"/>
+                    </div>
+                </div>
+
+                <div th:if="${itensDisponiveis == null or itensDisponiveis.isEmpty()}">
+                    <p style="color: #999; font-style: italic;">Nenhum item disponível no cardápio.</p>
+                </div>
+
+                <!-- Total do Pedido -->
+                <div class="total-section">
+                    Total: <span id="totalPedido">R$ 0,00</span>
+                </div>
+            </div>
+
+            <button type="submit">Criar Pedido</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleQuantidade(checkbox) {
+        const id = checkbox.value;
+        const qtdInput = document.getElementById('qtd_' + id);
+        const itemIdInput = document.getElementById('itemId_' + id);
+
+        if (checkbox.checked) {
+            qtdInput.disabled = false;
+            qtdInput.required = true;
+        } else {
+            qtdInput.disabled = true;
+            qtdInput.required = false;
+            qtdInput.value = '1';
+        }
+    }
+
+    function calcularTotal() {
+        let total = 0;
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+
+        checkboxes.forEach(function(checkbox) {
+            const id = checkbox.value;
+            const qtdInput = document.getElementById('qtd_' + id);
+            const preco = parseFloat(qtdInput.getAttribute('data-preco'));
+            const quantidade = parseInt(qtdInput.value) || 0;
+
+            total += preco * quantidade;
+        });
+
+        document.getElementById('totalPedido').textContent =
+            'R$ ' + total.toFixed(2).replace('.', ',');
+    }
+
+    // Remove itens não selecionados antes de submeter
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]:not(:checked)');
+        checkboxes.forEach(function(checkbox) {
+            const id = checkbox.value;
+            const qtdInput = document.getElementById('qtd_' + id);
+            const itemIdInput = document.getElementById('itemId_' + id);
+
+            if (qtdInput) qtdInput.remove();
+            if (itemIdInput) itemIdInput.remove();
+        });
+    });
+</script>
+</body>
+</html>

@@ -2,18 +2,16 @@ package faculdade.trabalho.FastFood.Service;
 
 import faculdade.trabalho.FastFood.Model.ItemPedidoModel;
 import faculdade.trabalho.FastFood.Repository.ItemPedidoRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ItemPedidoService {
 
     private final ItemPedidoRepository itemPedidoRepository;
-
-    public ItemPedidoService(ItemPedidoRepository itemPedidoRepository) {
-        this.itemPedidoRepository = itemPedidoRepository;
-    }
 
     // Criar item do pedido
     public ItemPedidoModel criarItemPedido(ItemPedidoModel itemPedido) {

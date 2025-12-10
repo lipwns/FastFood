@@ -1,0 +1,66 @@
+/* ===== CONTEÚDO ===== */
+.conteudo {
+    display: flex;
+    justify-content: space-around;
+    padding: 40px;
+}
+
+.coluna {
+    background: white;
+    width: 30%;
+    padding: 20px;
+    min-height: 500px;
+    border-radius: 10px;
+    border: 2px solid black;
+}
+
+.coluna h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ===== CARDS ===== */
+.pedido-card {
+    background: #888;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 2px solid black;
+    color: white;
+}
+
+.pedido-card p {
+    margin: 0;
+}
+
+.pedido-card span {
+    font-weight: bold;
+}
+
+/* ===== BOTÕES ===== */
+.azul { background: #3ca33c; }
+.vermelho { background: #dc3545; }
+
+/* Botões duplos */
+.duplo {
+    display: flex;
+    gap: 10px;
+}
+
+.container-pedidos {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+}
+
+.conteudo {
+    flex: 1;
+}
+
+.conteudo a {
+    text-decoration: none;
+    padding: 8px 16px;
+    color: white;
+    border: 2px solid white;
+    border-radius: 6px;
+}

@@ -53,3 +53,8 @@ textarea {
 .btn-ingredientes:hover {
     background-color: #0056b3;
 }
+
+p {
+    font-size: 14px;
+    color: #666;
+}

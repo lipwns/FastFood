@@ -8,7 +8,7 @@ import faculdade.trabalho.FastFood.Model.ItemModel;
 import faculdade.trabalho.FastFood.Repository.PedidoRepository;
 import faculdade.trabalho.FastFood.Repository.IngredienteRepository;
 import faculdade.trabalho.FastFood.Repository.ItemRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,19 +16,28 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PedidoService {
-
-    @Autowired
-    private PedidoRepository pedidoRepository;
-
-    @Autowired
-    private IngredienteRepository ingredienteRepository;
-
-    @Autowired
-    private ItemRepository itemRepository;
+    private final PedidoRepository pedidoRepository;
+    private final IngredienteRepository ingredienteRepository;
+    private final ItemRepository itemRepository;
 
     // Criar pedido com validação de estoque
     public PedidoModel criarPedido(PedidoModel pedido) {
+
+        if (pedido == null || pedido.getItens() == null) {
+            System.out.println("Pedido inválido: lista de itens nula.");
+            return null;
+        }
+
+        // Remove itens que não têm produto selecionado ou quantidade inválida
+        pedido.getItens().removeIf(ip -> ip == null || ip.getItem() == null || ip.getQuantidade() <= 0);
+
+        if (pedido.getItens().isEmpty()) {
+            System.out.println("Nenhum item válido no pedido.");
+            return null;
+        }
+
         double total = 0.0;
 
         // Verifica estoque antes de criar

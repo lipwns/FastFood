@@ -20,7 +20,7 @@
     <div class="botoes-nav">
         <a class="btn" th:href="@{/fastfood/ingredientes/listar}">Ingredientes</a>
         <a class="btn active" th:href="@{/fastfood/cardapio/listar}">Cardápio</a>
-        <button class="btn">Pedidos</button>
+        <a class="btn" th:href="@{/fastfood/pedidos/listar}">Pedidos</a>
     </div>
 </div>
 
@@ -43,7 +43,7 @@
             <!-- Seção de Ingredientes -->
             <div class="ingredientes-section">
                 <h3>Ingredientes do Item</h3>
-                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                <p style="margin-bottom: 15px;">
                     Selecione os ingredientes e defina as quantidades:
                 </p>
 
@@ -51,7 +51,7 @@
                     <div th:each="ing, iterStat : ${ingredientesDisponiveis}" class="ingrediente-item">
                         <input type="checkbox"
                                th:id="'check_' + ${ing.id}"
-                               name="ingredientesSelecionados"
+                               th:data-index="${iterStat.index}"
                                th:value="${ing.id}"
                                onclick="toggleQuantidade(this)"/>
 
@@ -59,26 +59,23 @@
 
                         <input type="number"
                                th:id="'qtd_' + ${ing.id}"
-                               th:name="'ingredientes[' + ${iterStat.index} + '].quantidade'"
                                min="1"
                                value="1"
                                placeholder="Qtd"
                                disabled/>
-
-                        <input type="hidden"
-                               th:id="'id_' + ${ing.id}"
-                               th:name="'ingredientes[' + ${iterStat.index} + '].ingrediente.id'"
-                               th:value="${ing.id}"/>
                     </div>
                 </div>
 
                 <div th:if="${ingredientesDisponiveis == null or ingredientesDisponiveis.isEmpty()}">
-                    <p style="color: #999;">Nenhum ingrediente cadastrado.</p>
+                    <p>Nenhum ingrediente cadastrado.</p>
                     <a class="btn-ingredientes" th:href="@{/fastfood/ingredientes/criar}">
                         Cadastrar Ingredientes
                     </a>
                 </div>
             </div>
+
+            <!-- Container oculto para os inputs que serão enviados -->
+            <div id="ingredientes-container" style="display: none;"></div>
 
             <button type="submit">Adicionar Item</button>
         </form>
@@ -89,7 +86,6 @@
     function toggleQuantidade(checkbox) {
         const id = checkbox.value;
         const qtdInput = document.getElementById('qtd_' + id);
-        const idInput = document.getElementById('id_' + id);
 
         if (checkbox.checked) {
             qtdInput.disabled = false;
@@ -102,15 +98,38 @@
     }
 
     document.querySelector('form').addEventListener('submit', function(e) {
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]:not(:checked)');
-        checkboxes.forEach(function(checkbox) {
+        e.preventDefault();
+
+        // Limpa o container de ingredientes
+        const container = document.getElementById('ingredientes-container');
+        container.innerHTML = '';
+
+        // Pega todos os checkboxes marcados
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+
+        // Cria os inputs hidden para cada ingrediente selecionado
+        checkboxes.forEach(function(checkbox, index) {
             const id = checkbox.value;
             const qtdInput = document.getElementById('qtd_' + id);
-            const idInput = document.getElementById('id_' + id);
+            const quantidade = qtdInput.value;
 
-            if (qtdInput) qtdInput.remove();
-            if (idInput) idInput.remove();
+            // Cria input para o ID do ingrediente
+            const inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'ingredientes[' + index + '].ingrediente.id';
+            inputId.value = id;
+            container.appendChild(inputId);
+
+            // Cria input para a quantidade
+            const inputQtd = document.createElement('input');
+            inputQtd.type = 'hidden';
+            inputQtd.name = 'ingredientes[' + index + '].quantidade';
+            inputQtd.value = quantidade;
+            container.appendChild(inputQtd);
         });
+
+        // Agora submete o formulário
+        this.submit();
     });
 </script>
 </body>
