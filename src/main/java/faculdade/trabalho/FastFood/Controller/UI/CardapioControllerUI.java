@@ -54,7 +54,15 @@ public class CardapioControllerUI {
             return "redirect:/fastfood/cardapio/listar";
         }
 
-        model.addAttribute("mensagem", "Erro ao atualizar item!");
+        model.addAttribute("mensagem", "Erro ao atualizar item! Verifique se os ingredientes são válidos!");
+
+        // CORREÇÃO: Devolver o objeto 'item' preenchido para o formulário não quebrar
+        model.addAttribute("item", itemModel);
+
+        // CORREÇÃO: Carregar a lista de ingredientes novamente para os checkboxes funcionarem
+        List<IngredienteModel> ingredientes = ingredienteService.listarTodos();
+        model.addAttribute("ingredientesDisponiveis", ingredientes);
+
         return "Cardapio/alterar";
     }
 

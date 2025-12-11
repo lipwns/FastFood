@@ -30,6 +30,12 @@ public class ItemService {
             return null;
         }
 
+
+        item.getIngredientes().removeIf(lig ->
+                lig == null || lig.getIngrediente() == null ||
+                        (lig.getIngrediente().getId() == null && lig.getIngrediente().getNome() == null)
+        );
+
         ItemModel novoItem = new ItemModel();
         novoItem.setNome(item.getNome());
         novoItem.setDescricao(item.getDescricao());
@@ -91,6 +97,14 @@ public class ItemService {
         if (existente == null) {
             System.out.println("Item não encontrado para atualizar!");
             return null;
+        }
+
+        if (item.getIngredientes() != null) {
+            item.getIngredientes().removeIf(lig ->
+                    lig == null ||
+                            lig.getIngrediente() == null ||
+                            (lig.getIngrediente().getId() == null && lig.getIngrediente().getNome() == null)
+            );
         }
 
         existente.setNome(item.getNome());
