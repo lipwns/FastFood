@@ -1,5 +1,10 @@
 package faculdade.trabalho.FastFood.Model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum StatusPedido {
     EM_ESPERA("em espera"),
     EM_PREPARO("em preparo"),
@@ -7,12 +12,4 @@ public enum StatusPedido {
     ENTREGUE("entregue");
 
     private final String descricao;
-
-    StatusPedido(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
 }

@@ -8,8 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/fastfood/ingredientes")
@@ -32,8 +32,8 @@ public class IngredienteControllerUI {
 
     @GetMapping("/alterar/{id}")
     public String exibirFormularioAlterar(@PathVariable Long id, Model model) {
-        IngredienteModel ingrediente = ingredienteService.buscarPorId(id);
-        if (ingrediente != null) {
+        Optional<IngredienteModel> ingrediente = ingredienteService.buscarPorId(id);
+        if (ingrediente.isPresent()) {
             model.addAttribute("ingrediente", ingrediente);
             return "Ingredientes/alterar";
         }
@@ -41,10 +41,10 @@ public class IngredienteControllerUI {
     }
 
     @PostMapping("/atualizar")
-    public String atualizar(@ModelAttribute IngredienteModel ingredienteModel, Model model) {
-        IngredienteModel ingredienteAtualizado = ingredienteService.atualizarIngrediente(ingredienteModel.getId(), ingredienteModel);
+    public String atualizar(@ModelAttribute IngredienteModel ingrediente, Model model) {
+        Optional<IngredienteModel> ingredienteAtualizado = ingredienteService.atualizarIngrediente(ingrediente.getId(), ingrediente);
 
-        if (ingredienteAtualizado != null) {
+        if (ingredienteAtualizado.isPresent()) {
             model.addAttribute("mensagem", "Ingrediente atualizado com sucesso!");
             return "redirect:/fastfood/ingredientes/listar";
         }

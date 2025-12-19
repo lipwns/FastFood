@@ -45,39 +45,37 @@ public class IngredienteService {
     }
 
     // buscar por ID
-    public IngredienteModel buscarPorId(Long id) {
+    public Optional<IngredienteModel> buscarPorId(Long id) {
         if (id == null) {
             System.out.println("ID inválido.");
-            return null;
+            return Optional.empty();
         }
 
-        Optional<IngredienteModel> opt = ingredienteRepository.findById(id);
-        return opt.orElse(null);
+        return ingredienteRepository.findById(id);
     }
 
-    public IngredienteModel buscarPorNome(String nome) {
-        if (nome == null) return null;
-        Optional<IngredienteModel> opt = ingredienteRepository.findByNomeIgnoreCase(nome);
-        return opt.orElse(null);
+    public Optional<IngredienteModel> buscarPorNome(String nome) {
+        if (nome == null) return Optional.empty();
+        return ingredienteRepository.findByNomeIgnoreCase(nome);
     }
 
-    public IngredienteModel atualizarIngrediente(Long id, IngredienteModel ing) {
+    public Optional<IngredienteModel> atualizarIngrediente(Long id, IngredienteModel ing) {
         if (id == null) {
             System.out.println("ID inválido.");
-            return null;
+            return Optional.empty();
         }
 
         Optional<IngredienteModel> existenteOpt = ingredienteRepository.findById(id);
 
-        if (existenteOpt.isEmpty()) {
-            System.out.println("Ingrediente não encontrado!");
-            return null;
+        if (existenteOpt.isPresent()) {
+            IngredienteModel existente = existenteOpt.get();
+            existente.setNome(ing.getNome());
+            existente.setQuantidade(ing.getQuantidade());
+            ingredienteRepository.save(existente);
+            return Optional.of(existente);
         }
 
-        IngredienteModel existente = existenteOpt.get();
-        existente.setNome(ing.getNome());
-        existente.setQuantidade(ing.getQuantidade());
-        return ingredienteRepository.save(existente);
+        return Optional.empty();
     }
 
     @Transactional

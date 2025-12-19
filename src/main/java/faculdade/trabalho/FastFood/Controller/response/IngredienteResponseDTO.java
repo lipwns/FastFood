@@ -1,4 +1,7 @@
 package faculdade.trabalho.FastFood.Controller.response;
 
-public record IngredienteResponseDTO() {
+import lombok.Builder;
+
+@Builder
+public record IngredienteResponseDTO(Long id, String nome, int quantidade) {
 }
