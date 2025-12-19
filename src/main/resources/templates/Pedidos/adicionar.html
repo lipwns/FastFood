@@ -219,7 +219,7 @@
         });
 
         document.getElementById('totalPedido').textContent =
-            'R$ ' + total.toFixed(2).replace('.', ',');
+            'R$ ' + total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     // Remove itens não selecionados antes de submeter
