@@ -1,10 +1,6 @@
 package faculdade.trabalho.FastFood.Service;
 
-import faculdade.trabalho.FastFood.Model.PedidoModel;
-import faculdade.trabalho.FastFood.Model.ItemPedidoModel;
-import faculdade.trabalho.FastFood.Model.ItemIngredienteModel;
-import faculdade.trabalho.FastFood.Model.IngredienteModel;
-import faculdade.trabalho.FastFood.Model.ItemModel;
+import faculdade.trabalho.FastFood.Model.*;
 import faculdade.trabalho.FastFood.Repository.PedidoRepository;
 import faculdade.trabalho.FastFood.Repository.IngredienteRepository;
 import faculdade.trabalho.FastFood.Repository.ItemRepository;
@@ -79,7 +75,7 @@ public class PedidoService {
         }
 
         pedido.setPrecoTotal(total);
-        pedido.setStatus("em espera");
+        pedido.setStatus(StatusPedido.EM_ESPERA);
         pedido.setDataHora(LocalDateTime.now());
 
         return pedidoRepository.save(pedido);
@@ -108,7 +104,7 @@ public class PedidoService {
     public List<PedidoModel> listarTodos() {
         return pedidoRepository.findAll()
                 .stream()
-                .filter(p -> !p.getStatus().equalsIgnoreCase("entregue"))
+                .filter(p -> p.getStatus() != StatusPedido.ENTREGUE)
                 .toList();
     }
 
@@ -119,7 +115,7 @@ public class PedidoService {
         if (opPedido.isPresent()) {
             PedidoModel pedido = opPedido.get();
 
-            if (pedido.getStatus().equalsIgnoreCase("em espera")) {
+            if (pedido.getStatus() == StatusPedido.EM_ESPERA) {
                 for (ItemPedidoModel ip : pedido.getItens()) {
                     for (ItemIngredienteModel iIng : ip.getItem().getIngredientes()) {
                         IngredienteModel ing = iIng.getIngrediente();
@@ -136,29 +132,21 @@ public class PedidoService {
 
     // Avançar status
     public void avancarStatus(PedidoModel pedido) {
-        String status = pedido.getStatus();
-        if (status.equalsIgnoreCase("em espera")) {
-            pedido.setStatus("em preparo");
-        } else if (status.equalsIgnoreCase("em preparo")) {
-            pedido.setStatus("pronto");
-        } else if (status.equalsIgnoreCase("pronto")) {
-            pedido.setStatus("entregue");
+        switch (pedido.getStatus()) {
+            case EM_ESPERA -> pedido.setStatus(StatusPedido.EM_PREPARO);
+            case EM_PREPARO -> pedido.setStatus(StatusPedido.PRONTO);
+            case PRONTO -> pedido.setStatus(StatusPedido.ENTREGUE);
         }
-
         pedidoRepository.save(pedido);
     }
 
     // Voltar status
     public void voltarStatus(PedidoModel pedido) {
-        String status = pedido.getStatus();
-        if (status.equalsIgnoreCase("entregue")) {
-            pedido.setStatus("pronto");
-        } else if (status.equalsIgnoreCase("pronto")) {
-            pedido.setStatus("em preparo");
-        } else if (status.equalsIgnoreCase("em preparo")) {
-            pedido.setStatus("em espera");
+        switch (pedido.getStatus()) {
+            case ENTREGUE -> pedido.setStatus(StatusPedido.PRONTO);
+            case PRONTO -> pedido.setStatus(StatusPedido.EM_PREPARO);
+            case EM_PREPARO -> pedido.setStatus(StatusPedido.EM_ESPERA);
         }
-
         pedidoRepository.save(pedido);
     }
 }

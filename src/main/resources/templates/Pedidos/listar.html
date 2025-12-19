@@ -40,7 +40,7 @@
 
             <div class="pedido-card"
                  th:each="pedido : ${pedidos}"
-                 th:if="${pedido.status == 'em espera'}">
+                 th:if="${pedido.status.name() == 'EM_ESPERA'}">
 
                 <p>
                     <strong th:text="${pedido.nome}"></strong><br>
@@ -68,7 +68,7 @@
 
             <div class="pedido-card"
                  th:each="pedido : ${pedidos}"
-                 th:if="${pedido.status == 'em preparo'}">
+                 th:if="${pedido.status.name() == 'EM_PREPARO'}">
 
                 <p>
                     <strong th:text="${pedido.nome}"></strong><br>
@@ -99,7 +99,7 @@
 
             <div class="pedido-card"
                  th:each="pedido : ${pedidos}"
-                 th:if="${pedido.status == 'pronto'}">
+                 th:if="${pedido.status.name() == 'PRONTO'}">
 
                 <p>
                     <strong th:text="${pedido.nome}"></strong><br>

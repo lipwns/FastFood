@@ -27,7 +27,8 @@ public class PedidoModel {
     private String formaPagamento;
     private double precoTotal;
 
-    private String status; // "em espera", "em preparo", "concluido"
+    @Enumerated(EnumType.STRING)
+    private StatusPedido status; // "em espera", "em preparo", "concluido"
 
     @CreationTimestamp
     private LocalDateTime dataHora;
@@ -37,12 +38,12 @@ public class PedidoModel {
     private List<ItemPedidoModel> itens = new ArrayList<>();
 
     public PedidoModel() {
-        this.status = "em espera";
+        this.status = StatusPedido.EM_ESPERA;
     }
 
     public PedidoModel(String nome, String formaPagamento) {
         this.nome = nome;
         this.formaPagamento = formaPagamento;
-        this.status = "em espera";
+        this.status = StatusPedido.EM_ESPERA;
     }
 }
